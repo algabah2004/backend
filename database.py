@@ -6,6 +6,8 @@ from sqlalchemy.orm import sessionmaker
 
 # 1. On cherche la variable DATABASE_URL fournie par Railway. Si elle n'existe pas, on prend SQLite en local.
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./iot_project.db")
+if SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 # 2. On adapte la configuration selon la base de données détectée
 if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):

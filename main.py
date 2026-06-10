@@ -1,9 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from datetime import datetime
-from pathlib import Path
 from pydantic import BaseModel
 
 try:
@@ -13,7 +11,6 @@ except ImportError:
 
 # Initialisation de l'API FastAPI
 app = FastAPI(title="API Station IoT - EPT GIT")
-FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
 # Sécurité CORS : Autorise ton dashboard à communiquer avec l'API
 app.add_middleware(
@@ -53,16 +50,12 @@ class CommandCreate(BaseModel):
 # Route 1 : Recevoir les données de l'ESP32 (POST /data)
 # Route 0 : Servir le dashboard web depuis le meme serveur
 @app.get("/")
-def serve_dashboard():
-    return FileResponse(FRONTEND_DIR / "index.html")
+def root():
+    return {"status": "ok", "message": "API Station IoT en ligne"}
 
-@app.get("/style.css")
-def serve_styles():
-    return FileResponse(FRONTEND_DIR / "style.css")
-
-@app.get("/app.js")
-def serve_app_script():
-    return FileResponse(FRONTEND_DIR / "app.js")
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
 
 @app.post("/data")
 def receive_data(data: SensorDataCreate, database: Session = Depends(get_db)):
