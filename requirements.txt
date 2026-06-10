@@ -5,6 +5,7 @@ sqlalchemy
 pydantic
 psycopg2-binary
 
-
+psycopg2-binary
+asyncpg
 
 
