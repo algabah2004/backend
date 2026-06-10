@@ -1,12 +1,19 @@
+import os
 from datetime import datetime
 from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Configuration de la base de données SQLite locale
-SQLALCHEMY_DATABASE_URL = "sqlite:///./iot_project.db"
+# 1. On cherche la variable DATABASE_URL fournie par Railway. Si elle n'existe pas, on prend SQLite en local.
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./iot_project.db")
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+# 2. On adapte la configuration selon la base de données détectée
+if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+else:
+    # Pour PostgreSQL, on retire l'argument spécifique à SQLite
+    engine = create_engine(SQLALCHEMY_DATABASE_URL)
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
